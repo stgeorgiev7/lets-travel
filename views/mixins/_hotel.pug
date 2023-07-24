@@ -1,0 +1,59 @@
+mixin hotel(hotel, searchQuerry)
+      .hotel 
+        .hotel_img
+          a(href=`/all/${hotel._id}`)
+          //-  img(src=`/images/images/images/hotels/${hotel.image}`)
+          img(src=`http://res.cloudinary.com/dcbiwo99x/image/upload/${hotel.image}.jpg`)
+        .hotel_info
+          a(href=`/all/${hotel._id}`)
+            h3=hotel.hotel_name
+          hr
+          if url.startsWith("/all/")
+           p=hotel.hotel_description 
+           hr
+          p=`Star rating: ${hotel.star_rating}`
+          p=`Country: ${hotel.country}` 
+          p=`Cost per night: ${hotel.cost_per_night}`
+
+        if url.startsWith("/all/")
+         hr
+         h3 Searchf for this hotel
+          .search_nav 
+           form(action="/results" method="POST")
+            .input_wrapper 
+             label(for="destination") Destination 
+             input(type="text" id="destination" name="destination" value=hotel.hotel_name)
+
+            .input_wrapper 
+             label(for="duration") Duration (nights) 
+             input(type="text" id="duration" name="duration" required)
+
+            .input_wrapper 
+             label(for="deparature-date") Departure date 
+             input(type="date" id="deparature-date" name="deparature-date" required)
+
+            .input_wrapper 
+             label(for="number-guests") Number of guests 
+             input(type="number" id="number-guests" name="number-guests" required)
+           
+            .input_wrapper 
+              button(type="submit") SEARCH!
+
+             
+ 
+        if url === "/results" || url.startsWith("/confirmation")
+          .hotel_order_details 
+            p=`Number of nights: ${searchQuerry.duration}`
+            -const costEach = searchQuerry.duration * hotel.cost_per_night
+            h3=`Cost for all nights ${costEach}`
+
+
+            - const query = `id=${hotel._id}&duration=${searchQuerry.duration}`
+            if url === "/results"
+              a.button(href=`/confirmation/${query}`) Continue
+            else if url.startsWith("/confirmation/")
+
+              if user
+                a.button(href=`/order-placed/${query}`) Place your order!
+              else 
+                a.button(href=`/login`) Please Login in to order!
